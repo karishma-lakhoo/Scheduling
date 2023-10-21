@@ -1,0 +1,1 @@
+Small data_0.txt stcf Expected 1 IO occurances for process AB but                      got 4
