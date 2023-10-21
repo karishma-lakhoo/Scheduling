@@ -14,6 +14,8 @@ class Process:
         self.io_frequency = io_frequency
         self.start_time = -1
         self.end_time = -1
+        self.executed = 0
+
 
 
 def stcf_scheduling(data_set):
@@ -22,9 +24,9 @@ def stcf_scheduling(data_set):
     output = ""
 
     while processes:
-        ready_processes = [p for p in processes if p.arrival_time <= current_time]
-        if ready_processes:
-            shortest_process = min(ready_processes, key=lambda p: p.duration)
+        ready = [p for p in processes if p.arrival_time <= current_time]
+        if ready:
+            shortest_process = min(ready, key=lambda p: (p.duration, p.arrival_time))
             processes.remove(shortest_process)
 
             # Start the process if it hasn't started yet
@@ -36,10 +38,11 @@ def stcf_scheduling(data_set):
             output += f"{shortest_process.name} "
             current_time += 1
             shortest_process.end_time -= 1
+            shortest_process.executed += 1
 
             # Check for I/O requests
             if shortest_process.end_time != 0:
-                if shortest_process.io_frequency > 0 and (current_time - shortest_process.start_time) % shortest_process.io_frequency == 0:
+                if shortest_process.io_frequency > 0 and (shortest_process.executed) % shortest_process.io_frequency == 0:
                     output += f"!{shortest_process.name} "
 
             # Update the duration of the executed process

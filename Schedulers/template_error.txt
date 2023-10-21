@@ -1,1 +1,0 @@
-Small data_7.txt template Expected 2 IO occurances for process BC but                      got 1
