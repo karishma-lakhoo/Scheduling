@@ -5,7 +5,6 @@ with open('config.json', 'r') as config_file:
     config = json.load(config_file)
 
 
-# Define the process data clas
 class Process:
     def __init__(self, name, duration, arrival_time, io_frequency):
         self.name = name
@@ -104,7 +103,6 @@ def main():
     TODO Your Algorithm - assign your output to the output variable
     """
 
-    # output = "AB AC AB !AD BA CB !BL BX AB" #Example output
     output = template(data_set)
 
     """
