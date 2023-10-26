@@ -14,41 +14,52 @@ class Process:
         self.io_frequency = io_frequency
         self.end_time = -1
         self.executed = 0
+        self.priority = 0
+        self.age = 0
 
 
-
-def stcf_scheduling(data_set):
+def template(data_set):
     current_time = 0
     processes = list(data_set)
     output = ""
 
+    aging_interval = 10
+
     while processes:
         ready = [p for p in processes if p.arrival_time <= current_time]
         if ready:
-            shortest_process = min(ready, key=lambda p: (p.duration, p.arrival_time))
-            processes.remove(shortest_process)
+            # Increase the age of all processes at regular intervals
+            if current_time % aging_interval == 0:
+                for process in ready:
+                    process.age += 1
+
+            # highest priority process
+            highest_priority_process = max(ready, key=lambda p: (p.priority, -p.age))
+            processes.remove(highest_priority_process)
 
             # Start the process if it hasn't started yet
-            if shortest_process.end_time == -1:
-                shortest_process.end_time = shortest_process.duration
+            if highest_priority_process.end_time == -1:
+                highest_priority_process.end_time = highest_priority_process.duration
 
             # Execute the process
-            output += f"{shortest_process.name} "
+            output += f"{highest_priority_process.name} "
             current_time += 1
-            shortest_process.end_time -= 1
-            shortest_process.executed += 1
+            highest_priority_process.end_time -= 1
+            highest_priority_process.executed += 1
 
             # Check for I/O requests
-            if shortest_process.end_time != 0:
-                if shortest_process.io_frequency > 0 and shortest_process.executed % shortest_process.io_frequency == 0:
-                    output += f"!{shortest_process.name} "
+            if highest_priority_process.end_time != 0:
+                if highest_priority_process.io_frequency > 0 and highest_priority_process.executed % highest_priority_process.io_frequency == 0:
+                    output += f"!{highest_priority_process.name} "
 
             # Update the duration of the executed process
-            shortest_process.duration -= 1
+            highest_priority_process.duration -= 1
 
             # If the process is not completed, put it back in the list
-            if shortest_process.duration > 0:
-                processes.append(shortest_process)
+            if highest_priority_process.duration > 0:
+                # decrease the priority of the process
+                highest_priority_process.priority = max(0, highest_priority_process.priority - 1)
+                processes.append(highest_priority_process)
 
         else:
             # No ready processes, time passes
@@ -94,7 +105,7 @@ def main():
     """
 
     # output = "AB AC AB !AD BA CB !BL BX AB" #Example output
-    output = stcf_scheduling(data_set)
+    output = template(data_set)
 
     """
     End of your algorithm
